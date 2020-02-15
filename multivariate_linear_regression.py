@@ -37,7 +37,7 @@ class Multivariate_Linear_Regression_Model(object) :
                         derivatives[c] += error[0] * input_array[b][c]
                     
                     #Updating the cost function value
-                    self.cost_func_value += error[0] ** 2
+                    self.cost_func_value += float(error[0] ** 2)
 
                 #Calculating the final derivatives
                 derivatives = derivatives / input_array.size
@@ -71,14 +71,14 @@ class Multivariate_Linear_Regression_Model(object) :
         #According to the Normal Equation, THETA = ((X.T*X)^-1) * X.T * Y
         self.parameters = np.matmul(np.matmul(np.linalg.inv(np.matmul(X.T, X)), X.T), Y)
 
-    def generate_input_array(self, training_inputs) :
-        """"Creates and returns a NumPy array containing the x0 and the inpus"""
+    def generate_input_array(self, inputs) :
+        """"Creates and returns a NumPy array containing the x0 and the inputs"""
 
-        X = np.array([self.x0] + training_inputs[0]) #Adding the 1st inputs to set the array dimensions
-        for a in range(1, len(training_inputs)) :
-            X = np.vstack((X, [self.x0] + training_inputs[a]))
+        X = np.array([self.x0] + inputs[0]) #Adding the 1st inputs to set the array dimensions
+        for a in range(1, len(inputs)) :
+            X = np.vstack((X, [self.x0] + inputs[a]))
 
-        X.shape = (len(training_inputs), len(training_inputs[0]) + 1) #Setting the dimensions(shape) of the input matrix
+        X.shape = (len(inputs), len(inputs[0]) + 1) #Setting the dimensions(shape) of the input matrix
         return X
 
     def reset(self) :
@@ -88,4 +88,15 @@ class Multivariate_Linear_Regression_Model(object) :
         self.parameters.shape = (self.parameters.size, 1)
 
         self.cost_func_value = 0.0
+
+    def get_output(self, inputs) :
+        """Gets output from the model"""
+
+        #Converting the inputs to the required format
+        x = np.array([self.x0] + inputs)
+
+        #Calculating the output
+        output = self.h(x)
+
+        return output
 
