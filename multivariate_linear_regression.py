@@ -58,6 +58,36 @@ class Multivariate_Linear_Regression_Model(object) :
                 #Using gradient descent for optimizing the model parameters
                 self.gradient_descent(derivatives, learning_rate)
 
+    def train_with_vectorized_gradient_descent(self, training_inputs, expected_outputs, learning_rate = 0.001, epochs = None, use_regularization=False, lmbda=0) :
+        """Trains the model on the given data for the given number of epochs"""
+
+        X = self.generate_input_array(training_inputs) #Converting the training inputs to NumPy array
+
+        y = np.array(expected_outputs) #Coverting the expected outputs to NumPy array
+        y.shape = (len(expected_outputs), 1) #Reshaping the expected outputs vector
+
+        #Checking if the user wants epoch based training
+        if(epochs != None) :
+            #Training for the given number of epochs
+            for a in range(0, epochs) :
+                derivatives = np.zeros(self.parameters.shape)
+                Z = np.dot(X, self.parameters)
+                E = Z - y
+
+                #Calculating the cost function
+                self.cost_func_value = sum(E**2) / (2 * y.shape[0])
+
+                #Calculating the gradients
+                derivatives = np.dot(X.T, E) / y.shape[0]
+
+                #Checking if regularization is to be used
+                if(use_regularization) :
+                    derivatives[1:-1] += self.parameters[1:-1] * (lmbda / y.shape[0])
+                    self.cost_func_value += (lmbda / (2 * y.shape[0])) * (self.parameters[1:-1] ** 2)
+
+                #Using gradient descent for optimizing the model parameters
+                self.gradient_descent(derivatives, learning_rate)
+
     def h(self, inputs) :
         """Calculates the output of the model i.e y = theta0*x_0 + theta1*x_1 + .... + theta_n*x_n = parameters.T * inputs"""
 
