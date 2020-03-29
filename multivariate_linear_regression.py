@@ -14,50 +14,6 @@ class Multivariate_Linear_Regression_Model(object) :
 
         self.cost_func_value = 0.0 #The last calculated value of the cost function
 
-    def train_with_gradient_descent(self, training_inputs, expected_outputs, learning_rate = 0.001, epochs = None, use_regularization=False, lmbda=0) :
-        """Trains the model on the given data for the given number of epochs"""
-
-        input_array = self.generate_input_array(training_inputs) #Converting the training inputs to NumPy array
-        expected_outputs_array = np.array(expected_outputs) #Coverting the expected outputs to NumPy array
-
-        training_dataset_size = len(training_inputs) #The size of the training data
-
-        #Checking if the user wants epoch based training
-        if(epochs != None) :
-            #Training for the given number of epochs
-            for a in range(0, epochs) :
-                derivatives = np.zeros(self.parameters.size) #The derivatives of the cost function wrt the parameters
-                #Iterating through the given data
-                for b in range(0, training_dataset_size) :
-                    output = self.h(input_array[b])
-                    error = output - expected_outputs_array[b] #The error in the model's prediction
-
-                    #Updating the derivatives
-                    for c in range(0, derivatives.size) :
-                        derivatives[c] += error[0] * input_array[b][c]
-                    
-                    #Updating the cost function value
-                    self.cost_func_value += float(error[0] ** 2)
-
-                #Calculating the final derivatives
-                derivatives = derivatives / input_array.size
-
-                #Calculating the final value of the cost function
-                self.cost_func_value /= 2 * input_array.size
-
-                #Checking if regularization is to be used
-                if(use_regularization) :
-                    params_sq_sum = 0 #The sum of the squares of the parameters (required to calculate cost)
-                    for param in range(1, self.parameters.shape[0]) :
-                        derivatives[param][0] += lmbda * self.parameters[param][0] / input_array.size
-                        params_sq_sum += self.parameters[param][0]**2
-                    
-                    #Calculating the final value of the cost function
-                    self.cost_func_value += lmbda * params_sq_sum
-
-                #Using gradient descent for optimizing the model parameters
-                self.gradient_descent(derivatives, learning_rate)
-
     def train_with_vectorized_gradient_descent(self, training_inputs, expected_outputs, learning_rate = 0.001, epochs = None, use_regularization=False, lmbda=0) :
         """Trains the model on the given data for the given number of epochs"""
 
@@ -96,7 +52,7 @@ class Multivariate_Linear_Regression_Model(object) :
 
         #Calculating the cost function value
         E = Z - y
-        j = sum(E**2) / (2 * y.shape[0])
+        j = np.sum(E**2) / (2 * y.shape[0])
         j += (lmbda / (2 * y.shape[0])) * np.sum((parameters[1:-1] ** 2))
 
         #Returning the outputs and cost
@@ -115,7 +71,7 @@ class Multivariate_Linear_Regression_Model(object) :
 
         #Calculating the gradients
         grads = np.dot(X.T, E) / y.shape[0]  
-        grads += params[1:-1] * (lmbda / y.shape[0])
+        grads[1:] += params[1:] * (lmbda / y.shape[0])
 
         #Returning the calculated gradients
         return grads
