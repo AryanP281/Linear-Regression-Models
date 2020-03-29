@@ -14,7 +14,7 @@ class Multivariate_Linear_Regression_Model(object) :
 
         self.cost_func_value = 0.0 #The last calculated value of the cost function
 
-    def train_with_vectorized_gradient_descent(self, training_inputs, expected_outputs, learning_rate = 0.001, epochs = None, use_regularization=False, lmbda=0) :
+    def train_with_gradient_descent(self, training_inputs, expected_outputs, learning_rate = 0.001, epochs = None, use_regularization=False, lmbda=0) :
         """Trains the model on the given data for the given number of epochs"""
 
         X = np.concatenate((np.ones((len(training_inputs), 1)), training_inputs), axis=1) #Converting the training inputs to NumPy array
